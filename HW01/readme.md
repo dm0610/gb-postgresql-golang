@@ -212,4 +212,44 @@ users->
 5. Пока не представляю как это реализовать, но всю жизнь мечтал создать своё облако :) 
 ```
 
-8.Разработать структуру базы данных, которая будет фундаментом для выбранного проекта (не менее трёх таблиц, не более 10 таблиц). В структуре базы данных желательно иметь логические связи между сущностями (не менее одной связи). Команды на создание таблиц описать в файле schema.sql.
+<p>8.Разработать структуру базы данных, которая будет фундаментом для выбранного проекта (не менее трёх таблиц, не более 10 таблиц). В структуре базы данных желательно иметь логические связи между сущностями (не менее одной связи). Команды на создание таблиц описать в файле schema.sql.
+<p>ОтветД:
+<p>
+
+```
+create database projects;
+
+CREATE TABLE projects (
+ id SERIAL PRIMARY KEY,
+ name TEXT NOT NULL,
+ owner_email  TEXT NOT NULL UNIQUE
+);
+
+CREATE TABLE services (
+ id SERIAL PRIMARY KEY,
+ service_name TEXT NOT NULL UNIQUE,
+ service_address TEXT NOT NULL UNIQUE,
+ service_techuser TEXT NOT NULL UNIQUE,
+ service_passwd TEXT NOT NULL UNIQUE
+);
+
+CREATE TABLE instances (
+ id SERIAL PRIMARY KEY,
+ service_id INTEGER NOT NULL UNIQUE,
+ instance_name TEXT NOT NULL UNIQUE,
+ project_id INTEGER NOT NULL UNIQUE,
+ FOREIGN KEY (service_id) REFERENCES services(id),
+ FOREIGN KEY (project_id) REFERENCES projects(id)
+);
+
+projects=# \dt+
+                               List of relations
+ Schema |   Name    | Type  |  Owner   | Persistence |    Size    | Description 
+--------+-----------+-------+----------+-------------+------------+-------------
+ public | instances | table | postgres | permanent   | 8192 bytes | 
+ public | projects  | table | postgres | permanent   | 8192 bytes | 
+ public | services  | table | postgres | permanent   | 8192 bytes | 
+(3 rows)
+
+projects=# 
+```

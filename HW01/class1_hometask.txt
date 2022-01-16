@@ -1,3 +1,10 @@
+1. create database users;
+
+2. create user techuser  password 'tEchpassW!!';
+
+3. grant all privileges on database users to techuser;
+
+4
 CREATE TABLE personaldata
 ( user_id        serial PRIMARY KEY,
   user_firstname char(50) NOT NULL,
@@ -5,11 +12,66 @@ CREATE TABLE personaldata
   user_email     char(50)
 );
 
+5. 
 INSERT INTO personaldata (user_firstname, user_lastname, user_email) VALUES 
 ('Artem', 'Ivanov', 'a.ivanov1@mail.ru' ),
 ('Dmitry', 'Semenov', 'd.semenov3@mail.ru' ),
 ('Ivan', 'Demchenko', 'i.demchenko1@mail.ru' );
 
 
-#########################
+6.
+postgres=# \du
+                                   List of roles
+ Role name |                         Attributes                         | Member of 
+-----------+------------------------------------------------------------+-----------
+ postgres  | Superuser, Create role, Create DB, Replication, Bypass RLS | {}
+ techuser  |                                                            | {}
 
+postgres=# \dt
+            List of relations
+ Schema |     Name     | Type  |  Owner   
+--------+--------------+-------+----------
+ public | personaldata | table | postgres
+(1 row)
+
+postgres=# \dn
+  List of schemas
+  Name  |  Owner   
+--------+----------
+ public | postgres
+(1 row)
+
+postgres=# \d
+                    List of relations
+ Schema |           Name           |   Type   |  Owner   
+--------+--------------------------+----------+----------
+ public | personaldata             | table    | postgres
+ public | personaldata_user_id_seq | sequence | postgres
+(2 rows)
+
+postgres=# \l
+                                 List of databases
+   Name    |  Owner   | Encoding |  Collate   |   Ctype    |   Access privileges   
+-----------+----------+----------+------------+------------+-----------------------
+ postgres  | postgres | UTF8     | en_US.utf8 | en_US.utf8 | 
+ template0 | postgres | UTF8     | en_US.utf8 | en_US.utf8 | =c/postgres          +
+           |          |          |            |            | postgres=CTc/postgres
+ template1 | postgres | UTF8     | en_US.utf8 | en_US.utf8 | =c/postgres          +
+           |          |          |            |            | postgres=CTc/postgres
+ users     | postgres | UTF8     | en_US.utf8 | en_US.utf8 | =Tc/postgres         +
+           |          |          |            |            | postgres=CTc/postgres+
+           |          |          |            |            | techuser=CTc/postgres
+(4 rows)
+
+postgres=# 
+
+7.Локальный небольшой аналог heroku.
+
+8.
+    1. Будет несколько сервисов. Гитхаб, dockerhub, jenkins, k8s(yandex, например)
+    2. Я создаю в базе в таблице projects новую строку(id,prName,jenkinsID,dockerID,k8sID,githubID) - новый проект. 
+    3. В других таблицах, отвечающих за сервисы создаю строки с id,name,projectSize,expirationDate,cleanPolicy
+    4. Сферические микросервисы в вакууме мониторят базу и после появления нового "инстанса" создают его реальную копию на заданных ресурсах.
+    5. Пока не представляю как это реализовать, но всю жизнь мечтал создать своё облако :) 
+
+9.

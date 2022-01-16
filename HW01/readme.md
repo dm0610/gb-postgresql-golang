@@ -36,7 +36,6 @@ postgres=# create database users;
 CREATE DATABASE
 postgres=# create user techuser  password 'tEchpassW!!';
 CREATE ROLE
-postgres=# create u^Cr myuser password 'secret';
 postgres=# grant all privileges on database users to techuser;
 GRANT
 postgres=# \q
@@ -207,7 +206,7 @@ users->
 
 ```
 1. Будет несколько сервисов. Гитхаб, dockerhub, jenkins, k8s(yandex, например)
-2. Я создаю в базе в таблице projects новую строку(id,prName,jenkinsID,dockerID,k8sID,githubID) - новый проект. 
+2. Я создаю в базе в таблице projects новую строку(id,prName) - новый проект. 
 3. В других таблицах, отвечающих за сервисы создаю строки с id,name,projectSize,expirationDate,cleanPolicy
 4. Сферические микросервисы в вакууме мониторят базу и после появления нового "инстанса" создают его реальную копию на заданных ресурсах.
 5. Пока не представляю как это реализовать, но всю жизнь мечтал создать своё облако :) 

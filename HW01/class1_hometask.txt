@@ -1,0 +1,15 @@
+CREATE TABLE personaldata
+( user_id        serial PRIMARY KEY,
+  user_firstname char(50) NOT NULL,
+  user_lastname  char(50) NOT NULL,
+  user_email     char(50)
+);
+
+INSERT INTO personaldata (user_firstname, user_lastname, user_email) VALUES 
+('Artem', 'Ivanov', 'a.ivanov1@mail.ru' ),
+('Dmitry', 'Semenov', 'd.semenov3@mail.ru' ),
+('Ivan', 'Demchenko', 'i.demchenko1@mail.ru' );
+
+
+#########################
+

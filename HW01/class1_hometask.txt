@@ -96,6 +96,7 @@ CREATE TABLE instances (
  id SERIAL PRIMARY KEY,
  service_id INTEGER NOT NULL UNIQUE,
  instance_name TEXT NOT NULL UNIQUE,
+ instance_expire_time TEXT NOT NULL UNIQUE,
  project_id INTEGER NOT NULL UNIQUE,
  FOREIGN KEY (service_id) REFERENCES services(id),
  FOREIGN KEY (project_id) REFERENCES projects(id)

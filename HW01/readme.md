@@ -207,7 +207,7 @@ users->
 ```
 1. Будет несколько сервисов. Гитхаб, dockerhub, jenkins, k8s(yandex, например)
 2. Я создаю в базе в таблице projects новую строку(id,prName) - новый проект. 
-3. В других таблицах, отвечающих за сервисы создаю строки с id,name,projectSize,expirationDate,cleanPolicy
+3. В других таблицах, отвечающих за сервисы создаю строки с id,name,expirationDate и т.п.
 4. Сферические микросервисы в вакууме мониторят базу и после появления нового "инстанса" создают его реальную копию на заданных ресурсах.
 5. Пока не представляю как это реализовать, но всю жизнь мечтал создать своё облако :) 
 ```
@@ -237,6 +237,7 @@ CREATE TABLE instances (
  id SERIAL PRIMARY KEY,
  service_id INTEGER NOT NULL UNIQUE,
  instance_name TEXT NOT NULL UNIQUE,
+ instance_expire_time TEXT NOT NULL UNIQUE,
  project_id INTEGER NOT NULL UNIQUE,
  FOREIGN KEY (service_id) REFERENCES services(id),
  FOREIGN KEY (project_id) REFERENCES projects(id)

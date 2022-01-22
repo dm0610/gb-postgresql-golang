@@ -23,4 +23,3 @@ CREATE TABLE instances (
  CONSTRAINT instances_fk_service_id FOREIGN KEY (service_id) REFERENCES services(id) ON DELETE RESTRICT,
  CONSTRAINT instances_fk_project_id FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE RESTRICT
 );
-

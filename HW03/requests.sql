@@ -1,4 +1,6 @@
-explain analyze SELECT instance_name, instance_description FROM instances WHERE instance_name LIKE '%jenkins' ORDER BY instance_name;
+explain analyze SELECT instance_name, instance_description 
+    FROM instances 
+    WHERE instance_name LIKE '%jenkins' ORDER BY instance_name;
 
 
 explain analyze SELECT 

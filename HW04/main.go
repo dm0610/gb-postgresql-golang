@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/jackc/pgx"
+	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
 )
 
@@ -128,8 +128,8 @@ func runInsert() {
 	defer dbpool.Close()
 
 	project := Project{
-		Title:      "New Origin",
-		OwnerEmail: "mike.owertone@mail.ru",
+		Title:      "My Old Corp",
+		OwnerEmail: "v.petrov@mail.ru",
 	}
 
 	id, err := insert(ctx, dbpool, project)
@@ -251,12 +251,12 @@ func runUpdate() {
 		log.Fatal(err)
 	}
 
-	fmt.Println("salary updated")
+	fmt.Println("project updated")
 }
 
 //*********************************************************RUN MAIN*********************************************************************
 func main() {
 	runSearch()
-	runInsert()
 	runUpdate()
+	runInsert()
 }

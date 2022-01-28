@@ -5,14 +5,11 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/jackc/pgx"
 	"github.com/jackc/pgx/v4/pgxpool"
 )
 
-//type (
-//	Title string
-//	Email string
-//)
-
+//********************************************************RUN SELECT********************************************************************
 type InstanceNameSearch struct {
 	ProjectID      int
 	ProjectTitle   string
@@ -73,7 +70,7 @@ limit $2;
 	return hints, nil
 }
 
-func main() {
+func runSearch() {
 	ctx := context.Background()
 
 	url := "postgres://techuser:techuser@localhost:5432/projects"
@@ -99,4 +96,167 @@ func main() {
 	for _, hint := range hints {
 		fmt.Println(hint.ProjectID, hint.ProjectTitle, hint.InstanceName, hint.ServiceTitle, hint.ServiceAddress)
 	}
+}
+
+//********************************************************RUN INSERT********************************************************************
+
+type (
+	ProjectID int
+)
+type Project struct {
+	Title      string
+	OwnerEmail string
+}
+
+func runInsert() {
+	ctx := context.Background()
+
+	url := "postgres://techuser:techuser@localhost:5432/projects"
+
+	cfg, err := pgxpool.ParseConfig(url)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	dbpool, err := pgxpool.ConnectConfig(ctx, cfg)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer dbpool.Close()
+
+	project := Project{
+		Title:      "New Origin",
+		OwnerEmail: "mike.owertone@mail.ru",
+	}
+
+	id, err := insert(ctx, dbpool, project)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println(id)
+}
+
+func insert(ctx context.Context, dbpool *pgxpool.Pool, project Project) (ProjectID, error) {
+	const sql = `
+insert into projects (title, owner_email) values
+	($1, $2)
+returning id;
+`
+
+	// При insert разумно использовать метод dbpool.Exec,
+	// который не требует возврата данных из запроса.
+	// В данном случае после вставки строки мы получаем её идентификатор.
+	// Идентификатор вставленной строки может быть использован
+	// в интерфейсе приложения.
+
+	var id ProjectID
+	err := dbpool.QueryRow(ctx, sql,
+		// Параметры должны передаваться в том порядке,
+		// в котором перечислены столбцы в SQL запросе.
+		project.Title,
+		project.OwnerEmail,
+	).Scan(&id)
+	if err != nil {
+		return 0, fmt.Errorf("failed to insert project: %w", err)
+	}
+
+	return id, nil
+}
+
+//********************************************************RUN UPDATE********************************************************************
+
+type TransactionFunc func(context.Context, pgx.Tx) error
+
+// inTx создает транзакцию и передает её для использования в функцию f
+// если в функции f происходит ошибка, транзакция откатывается
+func inTx(
+	ctx context.Context,
+	dbpool *pgxpool.Pool,
+	f TransactionFunc,
+) error {
+	transaction, err := dbpool.Begin(ctx)
+	if err != nil {
+		return err
+	}
+
+	err = f(ctx, transaction)
+	if err != nil {
+		rbErr := transaction.Rollback(ctx)
+
+		if rbErr != nil {
+			log.Print(rbErr)
+		}
+
+		return err
+	}
+
+	err = transaction.Commit(ctx)
+	if err != nil {
+		rbErr := transaction.Rollback(ctx)
+
+		if rbErr != nil {
+			log.Print(rbErr)
+		}
+
+		return err
+	}
+
+	return nil
+}
+
+func update(
+	ctx context.Context, dbpool *pgxpool.Pool, project Project,
+) error {
+	err := inTx(ctx, dbpool, func(ctx context.Context, tx pgx.Tx) error {
+		const sql = `update projects set owner_email = $1 where title = $2;`
+
+		_, err := tx.Exec(ctx, sql, project.OwnerEmail, project.Title)
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func runUpdate() {
+	project := Project{
+		Title:      "New Origin",
+		OwnerEmail: "dmv.strelnikov@mail.ru",
+	}
+	ctx := context.Background()
+
+	url := "postgres://techuser:techuser@localhost:5432/projects"
+
+	cfg, err := pgxpool.ParseConfig(url)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	dbpool, err := pgxpool.ConnectConfig(ctx, cfg)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer dbpool.Close()
+	err = update(ctx, dbpool, project)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("salary updated")
+}
+
+//*********************************************************RUN MAIN*********************************************************************
+func main() {
+	runSearch()
+	runInsert()
+	runUpdate()
 }

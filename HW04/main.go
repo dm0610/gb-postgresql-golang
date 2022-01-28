@@ -4,6 +4,9 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"sync"
+	"sync/atomic"
+	"time"
 
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
@@ -254,9 +257,110 @@ func runUpdate() {
 	fmt.Println("project updated")
 }
 
+//*********************************************************RUN LOAD GENERATOR*********************************************************************
+
+type AttackResults struct {
+	Duration         time.Duration
+	Threads          int
+	QueriesPerformed uint64
+}
+
+func attack(ctx context.Context, duration time.Duration, threads int, dbpool *pgxpool.Pool) AttackResults {
+	var queries uint64
+
+	attacker := func(stopAt time.Time) {
+		for {
+			_, err := search(ctx, dbpool, "alex", 5)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			atomic.AddUint64(&queries, 1)
+
+			if time.Now().After(stopAt) {
+				return
+			}
+		}
+	}
+
+	var wg sync.WaitGroup
+	wg.Add(threads)
+
+	startAt := time.Now()
+	stopAt := startAt.Add(duration)
+
+	for i := 0; i < threads; i++ {
+		go func() {
+			attacker(stopAt)
+			wg.Done()
+		}()
+	}
+
+	wg.Wait()
+
+	return AttackResults{
+		Duration:         time.Now().Sub(startAt),
+		Threads:          threads,
+		QueriesPerformed: queries,
+	}
+}
+
+func runLoadGen() {
+	ctx := context.Background()
+
+	url := "postgres://techuser:techuser@localhost:5432/projects"
+
+	cfg, err := pgxpool.ParseConfig(url)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	cfg.MaxConns = 1
+	cfg.MinConns = 1
+
+	dbpool, err := pgxpool.ConnectConfig(ctx, cfg)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer dbpool.Close()
+
+	duration := time.Duration(10 * time.Second)
+	threads := 1000
+	fmt.Println("start attack")
+	res := attack(ctx, duration, threads, dbpool)
+
+	fmt.Println("duration:", res.Duration)
+	fmt.Println("threads:", res.Threads)
+	fmt.Println("queries:", res.QueriesPerformed)
+	qps := res.QueriesPerformed / uint64(res.Duration.Seconds())
+	fmt.Println("QPS:", qps)
+}
+
 //*********************************************************RUN MAIN*********************************************************************
 func main() {
-	runSearch()
-	runUpdate()
-	runInsert()
+	//runSearch()
+	//runUpdate()
+	//runInsert()
+	runLoadGen()
+	/*
+	   projects=> select * from projects;
+	    id |       title        |      owner_email
+	   ----+--------------------+------------------------
+	     1 | Customers Feedback | a.ivanov1@mail.ru
+	     2 | New Cloud          | s.atremonov2@mail.ru
+	     3 | Shared Data        | n.semenov3@mail.ru
+	     7 | My Old Corp        | v.petrov@mail.ru
+	     4 | New Origin         | dmv.strelnikov@mail.ru
+	   (5 rows)
+	*/
+
+	/*
+		dmvstrelnikov@dmvstrelnikov-VirtualBox:~/Documents/GeekBrains/GB-Postgres/gb-postgresql-golang/HW04$ go run .
+		start attack
+		duration: 10.288708042s
+		threads: 1000
+		queries: 30315
+		QPS: 3031
+	*/
+
 }

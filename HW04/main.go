@@ -315,8 +315,8 @@ func runLoadGen() {
 		log.Fatal(err)
 	}
 
-	cfg.MaxConns = 1
-	cfg.MinConns = 1
+	cfg.MaxConns = 100
+	cfg.MinConns = 50
 
 	dbpool, err := pgxpool.ConnectConfig(ctx, cfg)
 	if err != nil {
@@ -355,12 +355,52 @@ func main() {
 	*/
 
 	/*
-		dmvstrelnikov@dmvstrelnikov-VirtualBox:~/Documents/GeekBrains/GB-Postgres/gb-postgresql-golang/HW04$ go run .
-		start attack
-		duration: 10.288708042s
-		threads: 1000
-		queries: 30315
-		QPS: 3031
+		cfg.MaxConns = 1
+		cfg.MinConns = 1
+			dmvstrelnikov@dmvstrelnikov-VirtualBox:~/Documents/GeekBrains/GB-Postgres/gb-postgresql-golang/HW04$ go run .
+			start attack
+			duration: 10.288708042s
+			threads: 1000
+			queries: 30315
+			QPS: 3031
+		cfg.MaxConns = 10
+		cfg.MinConns = 5
+			dmvstrelnikov@dmvstrelnikov-VirtualBox:~/Documents/GeekBrains/GB-Postgres/gb-postgresql-golang/HW04$ go run .
+			start attack
+			duration: 10.093315301s
+			threads: 1000
+			queries: 106583
+			QPS: 10658
+		cfg.MaxConns = 20
+		cfg.MinConns = 10
+			dmvstrelnikov@dmvstrelnikov-VirtualBox:~/Documents/GeekBrains/GB-Postgres/gb-postgresql-golang/HW04$ go run .
+			start attack
+			duration: 10.084377254s
+			threads: 1000
+			queries: 117238
+			QPS: 11723
+		cfg.MaxConns = 40
+		cfg.MinConns = 20
+			dmvstrelnikov@dmvstrelnikov-VirtualBox:~/Documents/GeekBrains/GB-Postgres/gb-postgresql-golang/HW04$ go run .
+			start attack
+			duration: 10.077240155s
+			threads: 1000
+			queries: 118083
+			QPS: 11808
+		cfg.MaxConns = 80
+		cfg.MinConns = 40
+			dmvstrelnikov@dmvstrelnikov-VirtualBox:~/Documents/GeekBrains/GB-Postgres/gb-postgresql-golang/HW04$ go run .
+			start attack
+			duration: 10.104022697s
+			threads: 1000
+			queries: 106220
+			QPS: 10622
+		cfg.MaxConns = 100
+		cfg.MinConns = 50
+			dmvstrelnikov@dmvstrelnikov-VirtualBox:~/Documents/GeekBrains/GB-Postgres/gb-postgresql-golang/HW04$ go run .
+			start attack
+			2022/01/28 18:14:16 failed to query data: failed to connect to `host=localhost user=techuser database=projects`: server error (FATAL: remaining connection slots are reserved for non-replication superuser connections (SQLSTATE 53300))
+			exit status 1
 	*/
 
 }

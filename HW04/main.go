@@ -89,7 +89,7 @@ func main() {
 	}
 	defer dbpool.Close()
 
-	limit := 5
+	limit := 2
 
 	hints, err := search(ctx, dbpool, "jenkins", limit)
 	if err != nil {

@@ -1,4 +1,4 @@
-package mypg
+package main
 
 import (
 	"context"

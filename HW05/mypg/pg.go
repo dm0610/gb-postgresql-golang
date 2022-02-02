@@ -38,7 +38,7 @@ FROM projects
 		 ON projects.id = instances.project_id
 	 JOIN services
 		 ON services.id = instances.service_id
-WHERE instances.instance_name like '$1' 
+WHERE instances.instance_name like $1
 limit $2;
 `
 

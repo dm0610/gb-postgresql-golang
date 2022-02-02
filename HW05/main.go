@@ -14,7 +14,10 @@ func main() {
 	ctx := context.Background()
 	dbpool := connect(ctx)
 	defer dbpool.Close()
-	var pg mypg.PG
+	pg := mypg.NewPG(dbpool)
+
+	//pg := mypg.PG.
+
 	hints, err := pg.Search(ctx, "jenkins", 5)
 	if err != nil {
 		log.Fatal(err)

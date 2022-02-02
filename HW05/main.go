@@ -16,7 +16,7 @@ func main() {
 	dbpool := connect(ctx)
 	defer dbpool.Close()
 	var pg mypg.PG
-	hints, err := PG.Search(ctx, dbpool, "jenkins", limit)
+	hints, err := pg.Search(ctx, dbpool, "jenkins", 5)
 	if err != nil {
 		log.Fatal(err)
 	}

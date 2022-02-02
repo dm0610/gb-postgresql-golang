@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"os"
 
 	"github.com/dm0610/gb-postgresql-golang/hw05/mypg"
 
@@ -16,7 +15,7 @@ func main() {
 	dbpool := connect(ctx)
 	defer dbpool.Close()
 	var pg mypg.PG
-	hints, err := pg.Search(ctx, dbpool, "jenkins", 5)
+	hints, err := pg.Search(ctx, "jenkins", 5)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -27,7 +26,7 @@ func main() {
 }
 
 func connect(ctx context.Context) *pgxpool.Pool {
-	dbpool, err := pgxpool.Connect(ctx, os.Getenv("DATABASE_URL"))
+	dbpool, err := pgxpool.Connect(ctx, "postgres://techuser:techuser@localhost:5432/projects")
 	if err != nil {
 		panic(err)
 	}

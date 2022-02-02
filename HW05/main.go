@@ -37,3 +37,10 @@ func connect(ctx context.Context) *pgxpool.Pool {
 
 	return dbpool
 }
+
+/*
+dmvstrelnikov@dmvstrelnikov-VirtualBox:~/Documents/GeekBrains/GB-Postgres/gb-postgresql-golang/HW05$ go run .
+1 Customers Feedback cf_jenkins jenkins jenkins.mycompany.ru
+2 New Cloud nc_jenkins jenkins jenkins.mycompany.ru
+3 Shared Data sd_jenkins jenkins jenkins.mycompany.ru
+*/

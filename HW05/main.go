@@ -1,9 +1,36 @@
-package main
+package mypg
+
+import (
+	"context"
+	"fmt"
+	"log"
+	"os"
+
+	"github.com/dm0610/gb-postgresql-golang/hw05/mypg"
+
+	"github.com/jackc/pgx/v4/pgxpool"
+)
 
 func main() {
-	runSelect()
+	ctx := context.Background()
+	dbpool := connect(ctx)
+	defer dbpool.Close()
+	var pg mypg.PG
+	hints, err := PG.Search(ctx, dbpool, "jenkins", limit)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for _, hint := range hints {
+		fmt.Println(hint.ProjectID, hint.ProjectTitle, hint.InstanceName, hint.ServiceTitle, hint.ServiceAddress)
+	}
 }
 
-func runSelect() {
-	//Тут будет код чтобы не пихать его в main(). Я художник, я так вижу, хотя понимаю, что это бред. Просто нет времени писать красиво
+func connect(ctx context.Context) *pgxpool.Pool {
+	dbpool, err := pgxpool.Connect(ctx, os.Getenv("DATABASE_URL"))
+	if err != nil {
+		panic(err)
+	}
+
+	return dbpool
 }

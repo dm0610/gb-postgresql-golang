@@ -3,7 +3,7 @@
 
 // файлы с интеграционными тестами используют package storage_test,
 // поэтому нужно явно ссылаться на storage, хотя все файлы лежат вместе.
-package main
+package mypg
 
 import (
 	"context"
@@ -28,19 +28,19 @@ func TestIntegrationSearch(t *testing.T) {
 		prefix  string
 		limit   int
 		prepare func(*pgxpool.Pool)
-		check   func(*testing.T, []storage.EmailSearchHint, error)
+		check   func(*testing.T, []storage.InstanceNameSearch, error)
 	}{
 		{
 			name:   "success",
 			store:  storage.NewPG(dbpool),
 			ctx:    context.Background(),
-			prefix: "alex",
+			prefix: "jenkins",
 			limit:  5,
 			prepare: func(dbpool *pgxpool.Pool) {
 				// Подготовка тестовых данных
 				dbpool.Exec(context.Background(), `insert into employees ...`)
 			},
-			check: func(t *testing.T, hints []storage.EmailSearchHint, err error) {
+			check: func(t *testing.T, hints []storage.InstanceNameSearch, err error) {
 				require.NoError(t, err)
 				require.NotEmpty(t, hints)
 			},

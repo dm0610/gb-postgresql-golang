@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/dm0610/gb-postgresql-golang/hw05/mypg"
 
@@ -29,7 +30,7 @@ func main() {
 }
 
 func connect(ctx context.Context) *pgxpool.Pool {
-	dbpool, err := pgxpool.Connect(ctx, "postgres://techuser:techuser@localhost:5432/projects")
+	dbpool, err := pgxpool.Connect(ctx, os.Getenv("DATABASE_URL"))
 	if err != nil {
 		panic(err)
 	}

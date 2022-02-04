@@ -9,3 +9,5 @@
 ДОМАШНЕЕ ЗАДАНИЕ 4 В ПАПКЕ [HW04](https://github.com/dm0610/gb-postgresql-golang/tree/hw04/HW04).
 
 ДОМАШНЕЕ ЗАДАНИЕ 5 В ПАПКЕ [HW05](https://github.com/dm0610/gb-postgresql-golang/tree/hw05/HW05).
+
+ДОМАШНЕЕ ЗАДАНИЕ 6 В ПАПКЕ [HW06](https://github.com/dm0610/gb-postgresql-golang/tree/hw06/HW06).
